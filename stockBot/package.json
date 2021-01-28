@@ -1,14 +1,14 @@
 {
   "name": "stockBot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple discord bot to check stock price and volume, just type '$[Company Symbol, ie TSLA]' into chat",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
     "dev": "nodemon bot.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sethb",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.5.1",
