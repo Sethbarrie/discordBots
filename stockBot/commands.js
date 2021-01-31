@@ -1,8 +1,10 @@
+require('dotenv').config();
+
 module.exports = {
-    STOCKBOT_ID: '804185299894272042',
+    STOCKBOT_ID: process.env.DISCORD_BOT_ID,
     AUTHORIZED_CHAR: '$',
-    ANALYSIS: 'analyze',
-    SPECULATE: 'trend',
+    ANALYSIS: '.analyze',
+    SPECULATE: '.trend',
     REACTABLE_WORDS: {
         'tsla': ['🚀','🌕'],
         'amc': ['🚀','🍿'],
