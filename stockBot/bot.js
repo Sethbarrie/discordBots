@@ -9,6 +9,8 @@ const ANALYSIS = require('./analysis');
 const getStockInfoWithAnalysis = ANALYSIS.getStockInfoWithAnalysis;
 const SPECULATE = require('./speculate');
 const getStockInfoWithSpeculate = SPECULATE.getStockInfoWithSpeculate;
+const CRYPTO = require('./crypto');
+const getCryptoInfo = CRYPTO.getCryptoInfo;
 
 client.on('ready', () => {
     console.log('Logged in successfully')
@@ -19,22 +21,6 @@ client.on('message', msg => {
         return;
     }
 
-    // if(msg.content.includes(CONSTANTS.AUTHORIZED_CHAR)){
-    //     let message = removeWaste(msg.content);
-    //     if(msg.content.includes(CONSTANTS.ANALYSIS)){
-    //         getStockInfoWithAnalysis(message).then(response => msg.reply(response)).catch(err => console.log(err));
-    //     } else if (msg.content.includes(CONSTANTS.SPECULATE)){
-    //         getStockInfoWithSpeculate(message).then(response => msg.reply(response)).catch(err => console.log(err));
-    //     } else {
-    //         getStockInfo(message).then(response => msg.reply(response)).catch(err => console.log(err));
-    //     }
-    //     // getStockInfo(msg).then(message => channel.send(embedResponse(message))).catch(err => console.log(err))
-    // }
-    // if(msg.content.includes(CONSTANTS.AUTHORIZED_CRYPTO)){
-    //     let message = removeWaste(msg.content);
-    //     getCryptoInfo(message).then(response => msg.reply(response)).catch(err => console.log(err))
-    // }
-    
     let returnCallback;
     let message;   
 
@@ -47,9 +33,7 @@ client.on('message', msg => {
         } else {
             returnCallback = getStockInfo;
         }
-    }
-
-    if(msg.content.includes(CONSTANTS.AUTHORIZED_CRYPTO)){
+    } else if(msg.content.includes(CONSTANTS.AUTHORIZED_CRYPTO)){
         message = removeWaste(msg.content);
         returnCallback = getCryptoInfo;
     }
@@ -68,9 +52,10 @@ client.on('message', msg => {
 
 function removeWaste(message){
     message = message.replace(CONSTANTS.AUTHORIZED_CHAR, '')
+    message = message.replace(CONSTANTS.AUTHORIZED_CRYPTO, '')
     message = message.replace(CONSTANTS.ANALYSIS, '')
     message = message.replace(CONSTANTS.SPECULATE, '')
-    message = message.replace(/<\/?[^>]+(>|$)/g,'', '')
+    message = message.replace(/<\/?[^>]+(>|$)/g, '')
     return message;
 }
 
