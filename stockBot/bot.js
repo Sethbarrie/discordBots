@@ -3,72 +3,66 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const Request = require('node-fetch');
+const CONSTANTS = require('./commands');
 
 client.on('ready', () => {
     console.log('Logged in successfully')
 })
 
-client.on('message', msg => {
-    //This is how to call for stocks. It looks for the $, if it finds it, then it checks 
-    //the API for the company symbol. If it has it, woo party
-    if(msg.content.includes('$')){
-        let stock = msg.content.slice(1);
-
-        //Simple regex to remove any dangerous characters lol
-        stock = stock.replace(/<\/?[^>]+(>|$)/g,'');
-
-        //URL to call to. Fun fact, if the link is built, you can click on it to see the data in the browser.
-        let stockURL = 'https://api.twelvedata.com/time_series?symbol=' + stock +',EUR/USD&interval=1min&apikey=' + process.env.TWELVE_DATA_API_KEY;
-
-        //This helps keep the API calls down, since it defaults to 30
-        stockURL += '&outputsize=1';
-
-        Request(stockURL).then(promiseHeader => {
-
-            promiseHeader.json().then( res => {
-                //res comes back with no response, or it finds the company but doesn't have any data on them
-                if(!res[stock] || !res[stock].values){
-                    msg.reply('Sorry I couldn\'t find that stock! I\'m sure it\'s there though. Sorry!')
-                } else {
-                    //This gives you access to the numbers of the company
-                    let recentData = res[stock].values[0]
-                    
-                    //This is found in the metadata, simple bool for currency
-                    let currencySymbol = res[stock].meta.currency === 'USD' ? '$' : '€';
-    
-                    
-                    //Formatting and parsing data to make it pretty
-                    let compStr = 'Company: ' + stock.toUpperCase();
-                    //The parseFloat is there because toFixed doesn't work on strings, and for some reason
-                    //When you parse the data from this, it comes in as a string, not a number.
-                    let curValueStr = 'Stock price: ' + currencySymbol + parseFloat(recentData.open).toFixed(2);
-
-                    //This crazy piece of code comes from StackOverflow
-                    //https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-                    let curVolumeStr = 'Current volume: ' + recentData.volume.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-
-                    //Grabs date from browser. Incoming data also has it but this is easier, however
-                    //It gives it the current time rather than the requested time. Shouldn't be a big deal
-                    let dateRecordedStr = 'Time: ' + new Date().toLocaleString().split(',')[1];
-    
-                    //Formatting so it isn't a big chunk and has new lines woo
-                    let botResponse = [compStr, curValueStr, curVolumeStr, dateRecordedStr].join('\n');
-    
-                    msg.reply(botResponse);
-                }
-            }).catch(err => console.log(err))
-        }).catch(err => console.log(err))
-    }
-})
 
 client.on('message', msg => {
-    if(msg.content.includes('$')){
-        if(msg.content.toDowncase().includes('tsla')){
-            msg.reply()
-        }
+    if(msg.content.slice(0,2) === '<@'){
+        return;
     }
+    if(msg.content.includes(CONSTANTS.AUTHORIZED_CHAR)){
+        getStockInfo(msg).then(message => msg.reply(message)).catch(err => console.log(err));
+    }
+    // CONSTANTS.REACTABLE_WORDS.forEach( obj => {
+    //     if(msg.content.includes(obj.word) || msg.content.includes(obj.word.toLowerCase())){
+    //         if(msg.author.id !== CONSTANTS.STOCKBOT_ID){
+    //             msg.react(obj.emoji);
+    //         }
+    //     }
+    // })
+
 })
 
+async function getStockInfo(message){
+    let idx = message.content.slice(1).indexOf(CONSTANTS.AUTHORIZED_CHAR);
+    let stock = message.content.slice(1, idx + 1);
+    let stockURL = formatURL(stock);
+    let stockData = await grabStockData(stockURL);
+    let response = await formatResponse(stockData, stock);
+    return await response;
+}
 
+function formatResponse(message, stock){
+    if(!message[stock] || !message[stock].values){
+        return 'Sorry I couldn\'t find that stock! I\'m sure it\'s there though. Sorry!';
+    } else {
+        let recentData = message[stock].values[0]
+        let currencySymbol = message[stock].meta.currency === 'USD' ? '$' : '€';
+        let compStr = 'Company: ' + stock.toUpperCase();
+        let curValueStr = 'Stock price: ' + currencySymbol + parseFloat(recentData.open).toFixed(2);
+        //https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+        let curVolumeStr = 'Current volume: ' + recentData.volume.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        let dateRecordedStr = 'Time: ' + new Date().toLocaleString().split(',')[1];
+        let botResponse = [compStr, curValueStr, curVolumeStr, dateRecordedStr].join('\n');
+        return botResponse;
+    }    
+}
+
+function formatURL(symbol){
+    symbol = symbol.replace(/<\/?[^>]+(>|$)/g,'');
+    let stockURL = 'https://api.twelvedata.com/time_series?symbol=' + symbol +',EUR/USD&interval=1min&apikey=' + process.env.TWELVE_DATA_API_KEY;
+    stockURL += '&outputsize=1&format=json';
+    return stockURL;
+}
+
+async function grabStockData(url){
+    let newVar = await Request(url).catch(err => console.log(err));
+    let secondVar = await newVar.json().catch(err => console.log(err));
+    return await secondVar;
+}
 
 client.login(process.env.BOT_TOKEN);
