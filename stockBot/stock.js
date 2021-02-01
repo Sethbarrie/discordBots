@@ -21,9 +21,7 @@ function formatResponse(stockJSON){
         let curValueStr =     ' Current price           | ' + currencySymbol + parseFloat(stockJSON.close).toFixed(2);
         let curHighStr =      " Today's high            | " + currencySymbol + parseFloat(stockJSON.high).toFixed(2);
         let curLowStr =       " Today's low             | " + currencySymbol + parseFloat(stockJSON.low).toFixed(2);
-
-        //https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-        
+            //https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
         let curVolumeStr =    ' Current volume          | ' + stockJSON.volume.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
         let dateRecordedStr = ' Time                    |' + new Date().toLocaleString().split(',')[1];
         let prevCloseStr =    " Yesterday's close price | " + currencySymbol + parseFloat(stockJSON.previous_close).toFixed(2);
@@ -53,32 +51,24 @@ function formatResponse(stockJSON){
 
         let spacer = new Array(maxWhiteSpaces).fill('-').join('');
 
-        maxWhiteSpaces -= (compStr.length);
-
-        // let front = true;
+        let compStrLength = maxWhiteSpaces - compStr.length;
 
         compStr = ( 
-            new Array(Math.floor(maxWhiteSpaces / 2)).fill(' ').join('') + 
+            new Array(Math.floor(compStrLength / 2)).fill(' ').join('') + 
             compStr + 
-            new Array(Math.floor(maxWhiteSpaces/2)).fill(' ').join('') +
+            new Array(Math.floor(compStrLength / 2)).fill(' ').join('') +
             '\n'
-        )
-        ;
+        );
+
+        botResponse = botResponse.map(str => {
+            let tempStr = str.slice(0);
+            while(tempStr.length < maxWhiteSpaces){
+                tempStr += ' ';
+            }
+            return tempStr;
+        })
 
         botResponse[0] = compStr;
-
-        console.log(compStr);
-        // while(maxWhiteSpaces){
-        //     if(front){
-        //         compStr = (" " + compStr);
-        //         front = false;
-        //     } else {
-        //         compStr = (compStr + ' ');
-        //         front = true;
-        //     }
-        //     console.log(compStr)
-        //     maxWhiteSpaces--;
-        // }
 
         botResponse.splice(1,0,spacer);
 
