@@ -4,6 +4,7 @@ module.exports = {
     STOCKBOT_ID: process.env.DISCORD_BOT_ID,
     AUTHORIZED_CHAR: '$',
     AUTHORIZED_CRYPTO: '#',
+    IPO_CALENDAR: '$ipo',
     ANALYSIS: '.analyze',
     SPECULATE: '.trend',
     REACTABLE_WORDS: {

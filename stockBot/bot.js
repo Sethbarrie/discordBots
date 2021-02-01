@@ -2,15 +2,12 @@ require('dotenv').config();
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const CONSTANTS = require('./commands');
-const STOCK = require('./stock');
-const getStockInfo = STOCK.getStockInfo;
-const ANALYSIS = require('./analysis');
-const getStockInfoWithAnalysis = ANALYSIS.getStockInfoWithAnalysis;
-const SPECULATE = require('./speculate');
-const getStockInfoWithSpeculate = SPECULATE.getStockInfoWithSpeculate;
-const CRYPTO = require('./crypto');
-const getCryptoInfo = CRYPTO.getCryptoInfo;
+const COMMANDS = require('./commands');
+const { getStockInfo } = require('./stock');
+const { getStockInfoWithAnalysis } = require('./analysis');
+const { getStockInfoWithSpeculate } = require('./speculate');
+const { getIPOCalendar } = require('./ipo_calendar');
+const { getCryptoInfo } = require('./crypto');
 
 client.on('ready', () => {
     console.log('Logged in successfully')
@@ -24,26 +21,29 @@ client.on('message', msg => {
     let returnCallback;
     let message;   
 
-    if(msg.content.includes(CONSTANTS.AUTHORIZED_CHAR)){
+    if(msg.content.includes(COMMANDS.AUTHORIZED_CHAR)){
         message = removeWaste(msg.content);
-        if(msg.content.includes(CONSTANTS.ANALYSIS)){
+        if(msg.content.includes(COMMANDS.ANALYSIS)){
             returnCallback = getStockInfoWithAnalysis;
-        } else if (msg.content.includes(CONSTANTS.SPECULATE)){
+        } else if (msg.content.includes(COMMANDS.SPECULATE)){
             returnCallback = getStockInfoWithSpeculate;
-        } else {
+        } else if (msg.content === COMMANDS.IPO_CALENDAR){
+            returnCallback = getIPOCalendar;
+        }else {
             returnCallback = getStockInfo;
         }
-    } else if(msg.content.includes(CONSTANTS.AUTHORIZED_CRYPTO)){
+    } else if(msg.content.includes(COMMANDS.AUTHORIZED_CRYPTO)){
         message = removeWaste(msg.content);
         returnCallback = getCryptoInfo;
     }
+    if(returnCallback && message){
+        returnCallback(message).then(response => msg.reply(response)).catch(console.log);
+    };
 
-    returnCallback(message).then(response => msg.reply(response)).catch(console.log);
-
-    Object.keys(CONSTANTS.REACTABLE_WORDS).forEach( word => {
+    Object.keys(COMMANDS.REACTABLE_WORDS).forEach( word => {
         if(msg.content.includes(word) || msg.content.includes(word.toLowerCase())){
-            if(msg.author.id !== CONSTANTS.STOCKBOT_ID){
-                let emojis = CONSTANTS.REACTABLE_WORDS[word];
+            if(msg.author.id !== COMMANDS.STOCKBOT_ID){
+                let emojis = COMMANDS.REACTABLE_WORDS[word];
                 emojis.forEach(emoji => msg.react(emoji))
             }
         }
@@ -51,10 +51,10 @@ client.on('message', msg => {
 })
 
 function removeWaste(message){
-    message = message.replace(CONSTANTS.AUTHORIZED_CHAR, '')
-    message = message.replace(CONSTANTS.AUTHORIZED_CRYPTO, '')
-    message = message.replace(CONSTANTS.ANALYSIS, '')
-    message = message.replace(CONSTANTS.SPECULATE, '')
+    message = message.replace(COMMANDS.AUTHORIZED_CHAR, '')
+    message = message.replace(COMMANDS.AUTHORIZED_CRYPTO, '')
+    message = message.replace(COMMANDS.ANALYSIS, '')
+    message = message.replace(COMMANDS.SPECULATE, '')
     message = message.replace(/<\/?[^>]+(>|$)/g, '')
     return message;
 }
