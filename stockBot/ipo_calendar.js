@@ -16,8 +16,8 @@ function formatResponse(ipoArray){
         ipoArray.pop();
         ipoArray[0][3] = 'Low Price';
         ipoArray[0][4] = 'High Price';
-        return Util.formatTable(ipoArray);
-    }    
+        return Util.formatCalendar(ipoArray);
+    }
 }
 
 function grabStockData(){

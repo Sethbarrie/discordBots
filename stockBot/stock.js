@@ -16,23 +16,19 @@ function formatResponse(stockJSON){
         return 'Sorry I couldn\'t find that stock! I\'m sure it\'s there though. Sorry!';
     } else {
         let currencySymbol = stockJSON.currency === 'USD' ? '$' : '€';
-        let compStr = 'Company: ' + stockJSON.name;
-        //Add market open price if possible
-        let openValueStr = 'Opening price: ' + currencySymbol + parseFloat(stockJSON.open).toFixed(2);
-        let curValueStr = 'Current price: ' + currencySymbol + parseFloat(stockJSON.close).toFixed(2);
-
-        let curHighStr = "Today's high: " + currencySymbol + parseFloat(stockJSON.high).toFixed(2);
-        let curLowStr = "Today's low: " + currencySymbol + parseFloat(stockJSON.low).toFixed(2);
+        let compStr = stockJSON.name;
+        let openValueStr =    ' Opening price           | ' + currencySymbol + parseFloat(stockJSON.open).toFixed(2);
+        let curValueStr =     ' Current price           | ' + currencySymbol + parseFloat(stockJSON.close).toFixed(2);
+        let curHighStr =      " Today's high            | " + currencySymbol + parseFloat(stockJSON.high).toFixed(2);
+        let curLowStr =       " Today's low             | " + currencySymbol + parseFloat(stockJSON.low).toFixed(2);
 
         //https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
         
-        let curVolumeStr = 'Current volume: ' + stockJSON.volume.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-
-        let dateRecordedStr = 'Time: ' + new Date().toLocaleString().split(',')[1];
-
-        let prevCloseStr = "Yesterday's close price: " + currencySymbol + parseFloat(stockJSON.previous_close).toFixed(2);
-        let yearHighStr = "52 Week High: " + currencySymbol + parseFloat(stockJSON.fifty_two_week.high).toFixed(2);
-        let yearLowStr = "52 Week High: " + currencySymbol + parseFloat(stockJSON.fifty_two_week.low).toFixed(2);
+        let curVolumeStr =    ' Current volume          | ' + stockJSON.volume.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        let dateRecordedStr = ' Time                    |' + new Date().toLocaleString().split(',')[1];
+        let prevCloseStr =    " Yesterday's close price | " + currencySymbol + parseFloat(stockJSON.previous_close).toFixed(2);
+        let yearHighStr =     " 52 Week High            | " + currencySymbol + parseFloat(stockJSON.fifty_two_week.high).toFixed(2);
+        let yearLowStr =      " 52 Week High            | " + currencySymbol + parseFloat(stockJSON.fifty_two_week.low).toFixed(2);
 
         let botResponse = [
             compStr, 
@@ -45,9 +41,48 @@ function formatResponse(stockJSON){
             dateRecordedStr, 
             yearHighStr, 
             yearLowStr
-        ].join('\n');
+        ];
 
-        return botResponse;
+        let maxWhiteSpaces = botResponse.reduce((acc, ele) => {
+            if(ele.length > acc){
+                return ele.length;
+            } else {
+                return acc;
+            }
+        }, 0);
+
+        let spacer = new Array(maxWhiteSpaces).fill('-').join('');
+
+        maxWhiteSpaces -= (compStr.length);
+
+        // let front = true;
+
+        compStr = ( 
+            new Array(Math.floor(maxWhiteSpaces / 2)).fill(' ').join('') + 
+            compStr + 
+            new Array(Math.floor(maxWhiteSpaces/2)).fill(' ').join('') +
+            '\n'
+        )
+        ;
+
+        botResponse[0] = compStr;
+
+        console.log(compStr);
+        // while(maxWhiteSpaces){
+        //     if(front){
+        //         compStr = (" " + compStr);
+        //         front = false;
+        //     } else {
+        //         compStr = (compStr + ' ');
+        //         front = true;
+        //     }
+        //     console.log(compStr)
+        //     maxWhiteSpaces--;
+        // }
+
+        botResponse.splice(1,0,spacer);
+
+        return ('```\n' + botResponse.join('\n') + '\n```');
     }    
 }
 function formatURL(symbol){

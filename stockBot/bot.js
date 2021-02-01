@@ -5,7 +5,7 @@ const client = new Discord.Client();
 const COMMANDS = require('./commands');
 const { getStockInfo } = require('./stock');
 const { getStockInfoWithAnalysis } = require('./analysis');
-const { getStockInfoWithSpeculate } = require('./speculate');
+const { speculateStock } = require('./speculate');
 const { getIPOCalendar } = require('./ipo_calendar');
 const { getCryptoInfo } = require('./crypto');
 
@@ -14,19 +14,19 @@ client.on('ready', () => {
 })
 
 client.on('message', msg => {
-    if(msg.author.bot){
+    if(msg.author.bot || msg.author.id === COMMANDS.STOCKBOT_ID){
         return;
     }
 
     let returnCallback;
     let message;   
 
-    if(msg.content.includes(COMMANDS.AUTHORIZED_CHAR)){
+    if(msg.content.includes(COMMANDS.AUTHORIZED_CHAR) && !msg.content.includes('```')){
         message = removeWaste(msg.content);
         if(msg.content.includes(COMMANDS.ANALYSIS)){
             returnCallback = getStockInfoWithAnalysis;
         } else if (msg.content.includes(COMMANDS.SPECULATE)){
-            returnCallback = getStockInfoWithSpeculate;
+            returnCallback = speculateStock;
         } else if (msg.content === COMMANDS.IPO_CALENDAR){
             returnCallback = getIPOCalendar;
         }else {
@@ -48,6 +48,7 @@ client.on('message', msg => {
             }
         }
     })
+
 })
 
 function removeWaste(message){
