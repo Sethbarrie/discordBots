@@ -48,7 +48,6 @@ client.on('message', msg => {
             }
         }
     })
-
 })
 
 function removeWaste(message){
@@ -60,4 +59,6 @@ function removeWaste(message){
     return message;
 }
 
-client.login(process.env.BOT_TOKEN);
+client.on('debug', console.log)
+
+client.login(process.env.BOT_TOKEN).catch(console.error);
