@@ -15,25 +15,17 @@ function formatResponse(stockJSON){
         return 'Sorry I couldn\'t find that stock! I\'m sure it\'s there though. Sorry!';
     } else {
         let currencySymbol = stockJSON['Currency'] === 'USD' ? '$' : '€';
-        let compStr = 'Company: ' + stockJSON['Name'];
-
         //https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-        
-        let marketCapStr = 'Market Cap: ' + currencySymbol + stockJSON['MarketCapitalization'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-
-        let outStandingSharesStr = 'Outstanding shares: ' + stockJSON['SharesOutstanding'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-        let floatedSharesStr = 'Floated shares: ' + stockJSON['SharesFloat'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-        let shortedSharesStr = 'Shorted shares: ' + stockJSON['SharesShort'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-        let shortRatio = 'Shorted ratio: ' + stockJSON['ShortRatio']
-
-
-        let yearHighStr = "52 Week High: " + currencySymbol + parseFloat(stockJSON['52WeekHigh']).toFixed(2);
-        let yearLowStr = "52 Week High: " + currencySymbol + parseFloat(stockJSON['52WeekLow']).toFixed(2);
-
-        let lastSplitDateStr = 'Last Split Date: ' + stockJSON['LastSplitDate'];
+        let marketCapStr =         ' | Market Cap         | ' + currencySymbol + stockJSON['MarketCapitalization'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        let outStandingSharesStr = ' | Outstanding shares | ' + stockJSON['SharesOutstanding'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        let floatedSharesStr =     ' | Floated shares     | ' + stockJSON['SharesFloat'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        let shortedSharesStr =     ' | Shorted shares     | ' + stockJSON['SharesShort'].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        let shortRatio =           ' | Shorted ratio      | ' + stockJSON['ShortRatio']
+        let yearHighStr =          " | 52 Week High       | " + currencySymbol + parseFloat(stockJSON['52WeekHigh']).toFixed(2);
+        let yearLowStr =           " | 52 Week High       | " + currencySymbol + parseFloat(stockJSON['52WeekLow']).toFixed(2);
+        let lastSplitDateStr =     ' | Last Split Date    | ' + stockJSON['LastSplitDate'];
 
         let botResponse = [
-            compStr, 
             marketCapStr, 
             outStandingSharesStr, 
             floatedSharesStr, 
@@ -42,9 +34,17 @@ function formatResponse(stockJSON){
             yearHighStr,
             yearLowStr,
             lastSplitDateStr
-        ].join('\n');
+        ];
+
+        let maxWhiteSpaces = botResponse.reduce((acc, ele) => ele.length > acc ? ele.length : acc, 0);
+
+        header = new Array(maxWhiteSpaces).fill(' ').join('')
+        let spacer = new Array(maxWhiteSpaces).fill('-').join('');
+
+        botResponse.splice(0,0,spacer);
+        botResponse.splice(0,0,header);
         
-        return botResponse;
+        return ( '```\n' + botResponse.join('\n') + '\n```');
     }    
 }
 function formatURL(symbol){
