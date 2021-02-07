@@ -2,15 +2,17 @@ require('dotenv').config();
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const COMMANDS = require('./commands');
-const { getStockInfo } = require('./stock');
-const { getStockInfoWithAnalysis } = require('./analysis');
-const { speculateStock } = require('./speculate');
-const { getIPOCalendar } = require('./ipo_calendar');
-const { getCryptoInfo } = require('./crypto');
+const COMMANDS = require('./util/commands');
+const { getStockInfo } = require('./actions/stock');
+const { getStockInfoWithAnalysis } = require('./actions/analysis');
+const { speculateStock } = require('./actions/speculate');
+const { getIPOCalendar } = require('./actions/ipo_calendar');
+const { getCryptoInfo } = require('./actions/crypto');
+const { log } = require('./util/util');
+const { yahooAnalyze } = require('./actions/yahoo_finance_parser');
 
 client.on('ready', () => {
-    console.log('Logged in successfully')
+    log('Logged in successfully')
 })
 
 client.on('message', msg => {
@@ -35,9 +37,12 @@ client.on('message', msg => {
     } else if(msg.content.includes(COMMANDS.AUTHORIZED_CRYPTO)){
         message = removeWaste(msg.content);
         returnCallback = getCryptoInfo;
+    // } else if(msg.content.slice(0,2) === '??'){
+    //     message = msg.content.slice(2);
+    //     returnCallback = yahooAnalyze
     }
     if(returnCallback && message){
-        returnCallback(message).then(response => msg.reply(response)).catch(console.log);
+        returnCallback(message).then(response => msg.reply(response)).catch( err => log(err));
     };
 
     Object.keys(COMMANDS.REACTABLE_WORDS).forEach( word => {
@@ -59,6 +64,6 @@ function removeWaste(message){
     return message;
 }
 
-client.on('debug', console.log)
+// client.on('debug', console.log)
 
 client.login(process.env.BOT_TOKEN).catch(console.error);
