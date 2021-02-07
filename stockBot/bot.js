@@ -37,9 +37,9 @@ client.on('message', msg => {
     } else if(msg.content.includes(COMMANDS.AUTHORIZED_CRYPTO)){
         message = removeWaste(msg.content);
         returnCallback = getCryptoInfo;
-    // } else if(msg.content.slice(0,2) === '??'){
-    //     message = msg.content.slice(2);
-    //     returnCallback = yahooAnalyze
+    } else if(msg.content.slice(0,2) === '??'){
+        message = msg.content.slice(2);
+        returnCallback = yahooAnalyze
     }
     if(returnCallback && message){
         returnCallback(message).then(response => msg.reply(response)).catch( err => log(err));

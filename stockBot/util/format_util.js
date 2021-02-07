@@ -1,6 +1,5 @@
-const formatNumber = require('./util').formatNumber;
 const formats = require('./formats');
-const Util = require('./util');
+
 module.exports = {
     addDescriptorsToCalendar: function (array){
         //This is grabbing the highest number from each column and returning an array
@@ -61,28 +60,6 @@ module.exports = {
     }
 }
 
-
-//IPO Calendar table
-// function maxWhiteSpaces(twoDArray){
-//     let maxWhiteSpaces = maxCharArr(twoDArray[0]);
-//     twoDArray.forEach(subArr => {
-//         let tempArr = maxCharArr(subArr);
-//         for(let i = 0; i < tempArr.length; i++){
-//             if(tempArr[i] > maxWhiteSpaces[i]){
-//                 maxWhiteSpaces[i] = tempArr[i];
-//             }
-//         }
-//     })
-//     return maxWhiteSpaces;
-// }
-
-// function maxCharArr(array){
-//     return array.map(word => word.length);
-// }
-
-
-
-//formatTable Methods
 function whiteSpaceCount(array){
     return array.reduce((acc, ele) => ele.length > acc ? ele.length : acc, 0);
 }
@@ -100,8 +77,6 @@ function centerHeader(word, num){
     };
     return newWord;   
 }
-
-//FormatCalendar Methods
 function addWhiteSpaces(word, num){
     return word + new Array(num - word.length).fill(' ').join('');
 }

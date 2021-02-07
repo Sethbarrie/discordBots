@@ -1,4 +1,3 @@
-const cryptoTable = require('../util/formats').cryptoTable;
 require('dotenv').config();
 const Request = require('node-fetch');
 const Util = require('../util/util');
