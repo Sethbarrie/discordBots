@@ -47,8 +47,6 @@ module.exports = {
         return '```\n' + string + '\n```';
     },
     joinTables: function( table1, table2){
-        console.log(table1)
-        console.log(table2)
         return table1.map(( string, idx) => string + table2[idx]);
     },
     deconstructTable: function(string){

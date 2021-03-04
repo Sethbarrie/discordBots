@@ -12,7 +12,6 @@ module.exports = {
     }
 }
 function formatResponse(stockJSON){
-    console.log('in the stock.js')
     if(!stockJSON || !stockJSON.symbol){
         return 'Sorry I couldn\'t find that stock! I\'m sure it\'s there though. Sorry!';
     } else {

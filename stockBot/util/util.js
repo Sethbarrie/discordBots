@@ -45,12 +45,11 @@ module.exports = {
 		return( arrData );
     },
     log: function log(message){
-        console.log(message);
         fs.writeFile('log.txt', message, err => {
             if(err){
                 return console.log(err);
             }
-            console.log('File saved successfully');
+            // console.log('File saved successfully');
         });
     }
 }

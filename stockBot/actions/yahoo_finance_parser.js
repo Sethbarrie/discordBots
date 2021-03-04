@@ -67,7 +67,6 @@ module.exports = {
         let dateArr = await optionsData.map(date => {
             return Request("https://finance.yahoo.com/quote/TSLA/options?date=" + date +"&p=" + stock + "&straddle=true")
         }); 
-        console.log(queryData)
         return Promise.all([ ...queryData, ...dateArr ]).then((responses) => {
             return Promise.all(responses.map((response, idx) => {
                 if(!idx){
@@ -92,7 +91,7 @@ module.exports = {
                     case 1: //Statistics, parse from text
 
                         let statsText = document.querySelector('#Col1-0-KeyStatistics-Proxy').children[0].children[2].innerText;
-                        console.log('statsText', statsText)
+                        // console.log('statsText', statsText)
                         break;
                     case 2: //History, comes from csv file    
                         // let url = document.querySelectorAll('#Col1-1-HistoricalDataTable-Proxy a')[0].href;
@@ -100,19 +99,19 @@ module.exports = {
                         break;
                     case 3: //Profile, parse from text    
                         let profileText = document.querySelector('#Col1-0-Profile-Proxy').innerText;
-                        console.log('profileText', profileText)
+                        // console.log('profileText', profileText)
                         break;
                     case 4:// Financials, parse from text    
                         let financialsText = document.querySelector('#Col1-1-Financials-Proxy').children[0].children[3].innerText;
-                        console.log('financialsText', financialsText);
+                        // console.log('financialsText', financialsText);
                         break;
                     case 5: //Analysis, parse from text    
                         let analysisText = document.querySelector('#Main').innerText;
-                        console.log('AnalysisText', analysisText);
+                        // console.log('AnalysisText', analysisText);
                         break;
                     case 6:// Options, parse from text    
                         let optionText = document.querySelector('#Col1-1-OptionContracts-Proxy').children[0].children[1].innerText;
-                        console.log('optionsText', optionText);
+                        // console.log('optionsText', optionText);
                         break;
                     case 7:
 
